@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChurnGuard | Analytics Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #060a14;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        /* ===== PARTICLES ===== */
+        .bg-particles {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px; height: 3px;
+            background: rgba(0, 198, 255, 0.35);
+            border-radius: 50%;
+            animation: particleFloat linear infinite;
+        }
+
+        .particle:nth-child(1) { left: 8%; animation-duration: 16s; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 22%; animation-duration: 21s; animation-delay: 3s; width: 2px; height: 2px; }
+        .particle:nth-child(3) { left: 38%; animation-duration: 18s; animation-delay: 1s; }
+        .particle:nth-child(4) { left: 55%; animation-duration: 24s; animation-delay: 5s; width: 4px; height: 4px; }
+        .particle:nth-child(5) { left: 70%; animation-duration: 17s; animation-delay: 2s; }
+        .particle:nth-child(6) { left: 82%; animation-duration: 20s; animation-delay: 4s; width: 2px; height: 2px; }
+        .particle:nth-child(7) { left: 90%; animation-duration: 22s; animation-delay: 1s; }
+        .particle:nth-child(8) { left: 48%; animation-duration: 19s; animation-delay: 6s; }
+
+        @keyframes particleFloat {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) scale(1); opacity: 0; }
+        }
+
+        /* ===== ANIMATIONS ===== */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+        .scale-in {
+            opacity: 0;
+            transform: scale(0.85);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .scale-in.visible { opacity: 1; transform: scale(1); }
+
+        /* ===== NAVBAR ===== */
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            z-index: 1000;
+            padding: 16px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(6, 10, 20, 0.8);
+            backdrop-filter: blur(25px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+
+        nav.scrolled {
+            padding: 12px 60px;
+            background: rgba(6, 10, 20, 0.95);
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px; height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 900;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 114, 255, 0.4);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #8a8a9a;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -6px; left: 0;
+            width: 0; height: 2px;
+            background: linear-gradient(90deg, #0072ff, #00c6ff);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover, .nav-links a.active { color: #fff; }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+
+        /* ===== HERO ===== */
+        .analytics-hero {
+            padding: 150px 40px 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .analytics-hero::before {
+            content: '';
+            position: absolute;
+            top: -120px; right: -120px;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(0, 114, 255, 0.1), transparent 70%);
+            animation: glowA 10s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .analytics-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -100px; left: -100px;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(0, 198, 255, 0.06), transparent 70%);
+            animation: glowB 12s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes glowA {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-40px, 30px) scale(1.1); }
+        }
+
+        @keyframes glowB {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, -40px); }
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            background: rgba(0, 114, 255, 0.1);
+            border: 1px solid rgba(0, 114, 255, 0.2);
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #00c6ff;
+            margin-bottom: 25px;
+            animation: badgePulse 3s ease-in-out infinite;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0, 114, 255, 0.2); }
+            50% { box-shadow: 0 0 0 12px rgba(0, 114, 255, 0); }
+        }
+
+        .analytics-hero h1 {
+            font-size: 50px;
+            font-weight: 900;
+            margin-bottom: 18px;
+            position: relative;
+            z-index: 1;
+            color: #fff;
+        }
+
+        .analytics-hero h1 .highlight {
+            background: linear-gradient(135deg, #00c6ff, #0072ff, #00c6ff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 4s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .analytics-hero p {
+            font-size: 18px;
+            color: #6a6a7a;
+            max-width: 700px;
+            margin: 0 auto 35px;
+            line-height: 1.75;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-primary {
+            padding: 15px 36px;
+            font-size: 15px;
+            font-weight: 700;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
+            color: #fff;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.4s;
+            box-shadow: 0 6px 25px rgba(0, 114, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary:hover::before { left: 100%; }
+        .btn-primary:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 40px rgba(0, 114, 255, 0.5);
+        }
+
+        .btn-secondary {
+            padding: 15px 36px;
+            font-size: 15px;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            color: #b0b0c0;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            transform: translateY(-3px);
+        }
+
+        /* ===== STATS BADGES ===== */
+        .stats-badges {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            padding: 30px 40px 60px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 16px;
+            padding: 20px 32px;
+            text-align: center;
+            min-width: 130px;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .badge:hover {
+            background: rgba(255, 255, 255, 0.07);
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(0, 114, 255, 0.2);
+        }
+
+        .badge h3 {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .badge p {
+            font-size: 11px;
+            color: #5a5a6a;
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+        }
+
+        /* ===== 3D DASHBOARD CONTAINER ===== */
+        .dashboard-section {
+            padding: 40px 60px 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .dashboard-title {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+
+        .dashboard-sub {
+            text-align: center;
+            font-size: 16px;
+            color: #6a6a7a;
+            max-width: 680px;
+            margin: 0 auto 45px;
+            line-height: 1.75;
+        }
+
+        .tableau-wrapper {
+            max-width: 1250px;
+            margin: 0 auto;
+            perspective: 1200px;
+        }
+
+        .tableau-container {
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow:
+                0 30px 80px rgba(0, 0, 0, 0.4),
+                0 0 40px rgba(0, 114, 255, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            transform: rotateX(2deg);
+            transform-origin: center top;
+        }
+
+        .tableau-container:hover {
+            transform: rotateX(0deg);
+            box-shadow:
+                0 40px 100px rgba(0, 0, 0, 0.5),
+                0 0 60px rgba(0, 114, 255, 0.08);
+        }
+
+        .tableau-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 22px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .tableau-dot {
+            width: 13px; height: 13px;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .tableau-dot:hover { transform: scale(1.3); }
+
+        .dot-red { background: #ff5f56; box-shadow: 0 0 8px rgba(255, 95, 86, 0.4); }
+        .dot-yellow { background: #ffbd2e; box-shadow: 0 0 8px rgba(255, 189, 46, 0.4); }
+        .dot-green { background: #27c93f; box-shadow: 0 0 8px rgba(39, 201, 63, 0.4); }
+
+        .tableau-header-text {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: 10px;
+        }
+
+        .tableau-header-text i {
+            color: #00c6ff;
+            font-size: 16px;
+        }
+
+        .tableau-header-text span {
+            font-size: 14px;
+            color: #6a6a7a;
+            font-weight: 500;
+        }
+
+        .live-indicator {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #27c93f;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .live-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #27c93f;
+            animation: livePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes livePulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(39, 201, 63, 0.4); }
+            50% { opacity: 0.6; box-shadow: 0 0 0 6px rgba(39, 201, 63, 0); }
+        }
+
+        tableau-viz {
+            width: 100%;
+            height: 850px;
+            display: block;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        /* ===== INFO CARDS ===== */
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            max-width: 1250px;
+            margin: 65px auto 0;
+            perspective: 1000px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 38px 28px;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #0072ff, #00c6ff);
+            transform: scaleX(0);
+            transition: transform 0.4s;
+        }
+
+        .info-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-12px) rotateX(3deg);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3), 0 0 25px rgba(0, 114, 255, 0.06);
+        }
+
+        .info-card:hover::before { transform: scaleX(1); }
+
+        .info-card-icon {
+            width: 52px; height: 52px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(0, 114, 255, 0.18), rgba(0, 198, 255, 0.08));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 22px;
+            color: #00c6ff;
+            transition: all 0.4s;
+        }
+
+        .info-card:hover .info-card-icon {
+            transform: scale(1.15) rotate(-5deg);
+            box-shadow: 0 8px 25px rgba(0, 114, 255, 0.2);
+        }
+
+        .info-card h3 {
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .info-card p {
+            font-size: 14px;
+            color: #6a6a7a;
+            line-height: 1.7;
+        }
+
+        /* ===== SOCIAL SECTION ===== */
+        .social-section {
+            text-align: center;
+            padding: 80px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .social-section h2 {
+            font-size: 30px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+
+        .social-section p {
+            font-size: 15px;
+            color: #6a6a7a;
+            margin-bottom: 30px;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .social-icon {
+            width: 54px; height: 54px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #8a8a9a;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .social-icon:hover {
+            transform: translateY(-8px) scale(1.1);
+            color: #fff;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .social-icon.github:hover { background: #333; border-color: #555; }
+        .social-icon.linkedin:hover { background: #0077b5; border-color: #0088cc; }
+        .social-icon.twitter:hover { background: #1da1f2; border-color: #33b5ff; }
+        .social-icon.instagram:hover { background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); border-color: #e1306c; }
+        .social-icon.youtube:hover { background: #ff0000; border-color: #ff3333; }
+        .social-icon.tableau:hover { background: #e97627; border-color: #f0883a; }
+
+        /* ===== FOOTER ===== */
+        footer {
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 14px;
+            color: #3a3a4a;
+            position: relative;
+            z-index: 1;
+        }
+
+        footer a {
+            color: #00c6ff;
+            text-decoration: none;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            nav { padding: 14px 22px; }
+            .nav-links { gap: 18px; }
+            .analytics-hero h1 { font-size: 32px; }
+            .hero-btns { flex-direction: column; align-items: center; }
+            .stats-badges { flex-wrap: wrap; gap: 12px; }
+            .dashboard-section { padding: 30px 18px 60px; }
+            .tableau-container { padding: 15px; transform: none; }
+            .info-cards { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- PARTICLES -->
+    <div class="bg-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav id="navbar">
+        <a href="/" class="logo">
+            <div class="logo-icon">C</div>
+            ChurnGuard
+        </a>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/features">Features</a></li>
+            <li><a href="/insights">Insights</a></li>
+            <li><a href="/growth">Growth</a></li>
+            <li><a href="/analytics" class="active">Analytics</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO -->
+    <section class="analytics-hero">
+        <div class="hero-badge">
+            <i class="fas fa-chart-bar"></i>
+            Tableau Business Intelligence
+        </div>
+        <h1>ChurnGuard <span class="highlight">Analytics</span></h1>
+        <p>
+            Explore ChurnGuard's interactive Tableau dashboard to understand churn patterns,
+            customer segments, contract behaviors, and retention insights in one premium analytics view.
+        </p>
+        <div class="hero-btns">
+            <a href="#tableau-dashboard" class="btn-primary"><i class="fas fa-arrow-down"></i>&nbsp; Open Dashboard</a>
+            <a href="/" class="btn-secondary"><i class="fas fa-home"></i>&nbsp; Back to Home</a>
+        </div>
+    </section>
+
+    <!-- STATS BADGES -->
+    <div class="stats-badges fade-up">
+        <div class="badge">
+            <h3>BI</h3>
+            <p>Intelligence</p>
+        </div>
+        <div class="badge">
+            <h3>Tableau</h3>
+            <p>Platform</p>
+        </div>
+        <div class="badge">
+            <h3>Churn</h3>
+            <p>Analysis</p>
+        </div>
+        <div class="badge">
+            <h3>Live</h3>
+            <p>Dashboard</p>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <section class="dashboard-section" id="tableau-dashboard">
+        <h2 class="dashboard-title fade-up">Customer Churn Dashboard</h2>
+        <p class="dashboard-sub fade-up">
+            This embedded Tableau dashboard is directly connected using Tableau embed code.
+            Users can interact with filters, charts, and dashboard controls from inside your Flask page.
+        </p>
+
+        <div class="login-instruction fade-up" style="background: rgba(255, 189, 46, 0.1); border: 1px solid rgba(255, 189, 46, 0.3); border-radius: 12px; padding: 15px 25px; max-width: 680px; margin: 0 auto 30px; text-align: center; color: #ffbd2e; font-weight: 500;">
+            <i class="fas fa-lock" style="margin-right: 8px;"></i>
+            <strong>Authentication Required:</strong> Please sign in using the email <strong style="color: #fff; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 6px; user-select: all; margin-left: 5px;">rachith12345bharadwaj@gmail.com</strong> to view the live dashboard.
+        </div>
+
+        <div class="tableau-wrapper scale-in">
+            <div class="tableau-container">
+                <div class="tableau-header">
+                    <div class="tableau-dot dot-red"></div>
+                    <div class="tableau-dot dot-yellow"></div>
+                    <div class="tableau-dot dot-green"></div>
+                    <div class="tableau-header-text">
+                        <i class="fas fa-chart-line"></i>
+                        <span>ChurnGuard Tableau Analytics — Interactive Dashboard</span>
+                    </div>
+                    <div class="live-indicator">
+                        <div class="live-dot"></div>
+                        Live
+                    </div>
+                </div>
+
+                <tableau-viz
+                    src="https://prod-in-a.online.tableau.com/t/rachith12345bharadwaj-2cb1200c86/views/CraftingBrain-RachithBharadwajTN/CustomerChurnAnalysisDashboard"
+                    width="100%"
+                    height="850"
+                    hide-tabs
+                    toolbar="bottom">
+                </tableau-viz>
+            </div>
+        </div>
+
+        <script type="module"
+            src="https://prod-in-a.online.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js">
+        </script>
+
+        <!-- INFO CARDS -->
+        <div class="info-cards">
+            <div class="info-card fade-up">
+                <div class="info-card-icon"><i class="fas fa-chart-line"></i></div>
+                <h3>Churn Tracking</h3>
+                <p>Analyze where churn is happening and identify weak areas in the customer retention process across all segments.</p>
+            </div>
+            <div class="info-card fade-up" style="transition-delay: 0.1s">
+                <div class="info-card-icon"><i class="fas fa-filter"></i></div>
+                <h3>Interactive BI</h3>
+                <p>Use Tableau filters, visuals, and dashboard controls directly inside your Flask application for deep analysis.</p>
+            </div>
+            <div class="info-card fade-up" style="transition-delay: 0.2s">
+                <div class="info-card-icon"><i class="fas fa-bullseye"></i></div>
+                <h3>Retention Decisions</h3>
+                <p>Turn dashboard observations into practical actions for customer retention improvement and business growth.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SOCIAL SECTION -->
+    <section class="social-section fade-up">
+        <h2>Connect With Us</h2>
+        <p>Follow ChurnGuard on social media for analytics tips and business insights.</p>
+        <div class="social-icons">
+            <a href="#" class="social-icon github" title="GitHub"><i class="fab fa-github"></i></a>
+            <a href="#" class="social-icon linkedin" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" class="social-icon twitter" title="Twitter"><i class="fab fa-x-twitter"></i></a>
+            <a href="#" class="social-icon instagram" title="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-icon youtube" title="YouTube"><i class="fab fa-youtube"></i></a>
+            <a href="#" class="social-icon tableau" title="Tableau Public"><i class="fas fa-chart-bar"></i></a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        &copy; 2026 ChurnGuard. Analytics dashboard powered by <a href="#">Tableau</a> & <a href="#">Flask</a>.
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script>
+        // Navbar scroll
+        window.addEventListener('scroll', () => {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        // Scroll reveal
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+        document.querySelectorAll('.fade-up, .scale-in').forEach(el => observer.observe(el));
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    </script>
+
+</body>
+
+</html>

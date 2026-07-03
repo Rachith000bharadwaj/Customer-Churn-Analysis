@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChurnGuard | Project Report & Insights</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #060a14;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        /* ===== PARTICLES ===== */
+        .bg-particles {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px; height: 3px;
+            background: rgba(0, 198, 255, 0.3);
+            border-radius: 50%;
+            animation: particleFloat linear infinite;
+        }
+
+        .particle:nth-child(1) { left: 12%; animation-duration: 18s; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 28%; animation-duration: 22s; animation-delay: 3s; width: 2px; height: 2px; }
+        .particle:nth-child(3) { left: 42%; animation-duration: 16s; animation-delay: 1s; }
+        .particle:nth-child(4) { left: 58%; animation-duration: 20s; animation-delay: 5s; width: 4px; height: 4px; }
+        .particle:nth-child(5) { left: 72%; animation-duration: 19s; animation-delay: 2s; }
+        .particle:nth-child(6) { left: 88%; animation-duration: 24s; animation-delay: 4s; width: 2px; height: 2px; }
+
+        @keyframes particleFloat {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) scale(1); opacity: 0; }
+        }
+
+        /* ===== ANIMATIONS ===== */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+        .fade-left {
+            opacity: 0;
+            transform: translateX(-40px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-left.visible { opacity: 1; transform: translateX(0); }
+
+        .fade-right {
+            opacity: 0;
+            transform: translateX(40px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-right.visible { opacity: 1; transform: translateX(0); }
+
+        /* ===== NAVBAR ===== */
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            z-index: 1000;
+            padding: 16px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(6, 10, 20, 0.8);
+            backdrop-filter: blur(25px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+
+        nav.scrolled {
+            padding: 12px 60px;
+            background: rgba(6, 10, 20, 0.95);
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px; height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 900;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 114, 255, 0.4);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #8a8a9a;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -6px; left: 0;
+            width: 0; height: 2px;
+            background: linear-gradient(90deg, #0072ff, #00c6ff);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover, .nav-links a.active { color: #fff; }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+
+        /* ===== HERO ===== */
+        .insights-hero {
+            padding: 150px 40px 70px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .insights-hero::before {
+            content: '';
+            position: absolute;
+            top: -120px; left: -120px;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(0, 114, 255, 0.1), transparent 70%);
+            animation: glowA 10s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes glowA {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(50px, 30px) scale(1.1); }
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            background: rgba(0, 114, 255, 0.1);
+            border: 1px solid rgba(0, 114, 255, 0.2);
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #00c6ff;
+            margin-bottom: 25px;
+            animation: badgePulse 3s ease-in-out infinite;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0, 114, 255, 0.2); }
+            50% { box-shadow: 0 0 0 12px rgba(0, 114, 255, 0); }
+        }
+
+        .insights-hero h1 {
+            font-size: 50px;
+            font-weight: 900;
+            margin-bottom: 18px;
+            position: relative;
+            z-index: 1;
+            color: #fff;
+        }
+
+        .insights-hero h1 .highlight {
+            background: linear-gradient(135deg, #00c6ff, #0072ff, #00c6ff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 4s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .insights-hero p {
+            font-size: 18px;
+            color: #6a6a7a;
+            max-width: 750px;
+            margin: 0 auto 35px;
+            line-height: 1.75;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-primary {
+            padding: 15px 36px;
+            font-size: 15px;
+            font-weight: 700;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
+            color: #fff;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.4s;
+            box-shadow: 0 6px 25px rgba(0, 114, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary:hover::before { left: 100%; }
+        .btn-primary:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 40px rgba(0, 114, 255, 0.5);
+        }
+
+        .btn-secondary {
+            padding: 15px 36px;
+            font-size: 15px;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            color: #b0b0c0;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            transform: translateY(-3px);
+        }
+
+        /* ===== REPORT OVERVIEW ===== */
+        .report-overview {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 40px 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 22px;
+            margin-bottom: 70px;
+        }
+
+        .overview-card {
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 18px;
+            padding: 30px 22px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .overview-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-8px);
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.3);
+            border-color: rgba(0, 114, 255, 0.2);
+        }
+
+        .overview-card .icon {
+            width: 50px; height: 50px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(0, 114, 255, 0.18), rgba(0, 198, 255, 0.08));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+            font-size: 22px;
+            color: #00c6ff;
+        }
+
+        .overview-card h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .overview-card p {
+            font-size: 13px;
+            color: #5a5a6a;
+        }
+
+        /* ===== REPORT SECTIONS ===== */
+        .report-section {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .report-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 24px;
+            padding: 50px 45px;
+            margin-bottom: 35px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .report-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 4px; height: 100%;
+            background: linear-gradient(180deg, #0072ff, #00c6ff);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .report-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(0, 114, 255, 0.15);
+            transform: translateX(6px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+        }
+
+        .report-card:hover::before { opacity: 1; }
+
+        .report-card-header {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+
+        .report-number {
+            width: 52px; height: 52px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 900;
+            color: #fff;
+            flex-shrink: 0;
+            box-shadow: 0 6px 20px rgba(0, 114, 255, 0.3);
+        }
+
+        .report-card-header-text h2 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .report-card-header-text .tag {
+            display: inline-block;
+            padding: 3px 12px;
+            background: rgba(0, 114, 255, 0.1);
+            border: 1px solid rgba(0, 114, 255, 0.2);
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #00c6ff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .report-card p {
+            font-size: 16px;
+            color: #8a8a9a;
+            line-height: 1.8;
+            margin-bottom: 14px;
+        }
+
+        .report-card .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-top: 20px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .detail-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .detail-item i {
+            color: #00c6ff;
+            font-size: 14px;
+            margin-top: 3px;
+            flex-shrink: 0;
+        }
+
+        .detail-item span {
+            font-size: 14px;
+            color: #9a9aaa;
+            line-height: 1.55;
+        }
+
+        .report-card .highlight-box {
+            margin-top: 22px;
+            padding: 18px 22px;
+            background: rgba(0, 114, 255, 0.06);
+            border: 1px solid rgba(0, 114, 255, 0.12);
+            border-radius: 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .highlight-box i {
+            color: #00c6ff;
+            font-size: 18px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .highlight-box p {
+            font-size: 14px;
+            color: #a0b0c0;
+            line-height: 1.65;
+            margin-bottom: 0;
+        }
+
+        /* ===== CONCLUSION ===== */
+        .conclusion-section {
+            max-width: 1100px;
+            margin: 40px auto 0;
+            padding: 0 40px 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .conclusion-card {
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 24px;
+            padding: 55px 50px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .conclusion-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #0072ff, #00c6ff, #0072ff);
+            background-size: 200% auto;
+            animation: shimmer 3s linear infinite;
+        }
+
+        .conclusion-card h2 {
+            font-size: 30px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .conclusion-card h2 i {
+            color: #00c6ff;
+        }
+
+        .conclusion-card p {
+            font-size: 16px;
+            color: #8a8a9a;
+            line-height: 1.8;
+            margin-bottom: 16px;
+        }
+
+        .findings-list {
+            list-style: none;
+            margin-top: 25px;
+        }
+
+        .findings-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            transition: all 0.3s;
+        }
+
+        .findings-list li:last-child { border-bottom: none; }
+
+        .findings-list li:hover {
+            padding-left: 10px;
+        }
+
+        .findings-list li .num {
+            width: 30px; height: 30px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(0, 114, 255, 0.2), rgba(0, 198, 255, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 800;
+            color: #00c6ff;
+            flex-shrink: 0;
+        }
+
+        .findings-list li span {
+            font-size: 15px;
+            color: #9a9aaa;
+            line-height: 1.6;
+        }
+
+        .findings-list li span strong {
+            color: #c0d0e0;
+        }
+
+        /* ===== SOCIAL SECTION ===== */
+        .social-section {
+            text-align: center;
+            padding: 70px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .social-section h2 {
+            font-size: 30px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+
+        .social-section p {
+            font-size: 15px;
+            color: #6a6a7a;
+            margin-bottom: 30px;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .social-icon {
+            width: 54px; height: 54px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #8a8a9a;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .social-icon:hover {
+            transform: translateY(-8px) scale(1.1);
+            color: #fff;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .social-icon.github:hover { background: #333; border-color: #555; }
+        .social-icon.linkedin:hover { background: #0077b5; border-color: #0088cc; }
+        .social-icon.twitter:hover { background: #1da1f2; border-color: #33b5ff; }
+        .social-icon.instagram:hover { background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); border-color: #e1306c; }
+        .social-icon.youtube:hover { background: #ff0000; border-color: #ff3333; }
+        .social-icon.tableau:hover { background: #e97627; border-color: #f0883a; }
+
+        /* ===== FOOTER ===== */
+        footer {
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 14px;
+            color: #3a3a4a;
+            position: relative;
+            z-index: 1;
+        }
+
+        footer a { color: #00c6ff; text-decoration: none; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            nav { padding: 14px 22px; }
+            .nav-links { gap: 18px; }
+            .insights-hero h1 { font-size: 32px; }
+            .hero-btns { flex-direction: column; align-items: center; }
+            .overview-grid { grid-template-columns: repeat(2, 1fr); }
+            .report-card { padding: 30px 25px; }
+            .report-card .detail-grid { grid-template-columns: 1fr; }
+            .conclusion-card { padding: 35px 25px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- PARTICLES -->
+    <div class="bg-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav id="navbar">
+        <a href="/" class="logo">
+            <div class="logo-icon">C</div>
+            ChurnGuard
+        </a>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/features">Features</a></li>
+            <li><a href="/insights" class="active">Insights</a></li>
+            <li><a href="/growth">Growth</a></li>
+            <li><a href="/analytics">Analytics</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO -->
+    <section class="insights-hero">
+        <div class="hero-badge">
+            <i class="fas fa-file-lines"></i>
+            Project Report
+        </div>
+        <h1>Insights & <span class="highlight">Analysis Report</span></h1>
+        <p>
+            A comprehensive breakdown of the Customer Churn Analysis Tableau dashboard.
+            Each worksheet is explained with its purpose, configuration, and the business insight it delivers.
+        </p>
+        <div class="hero-btns">
+            <a href="#report" class="btn-primary"><i class="fas fa-arrow-down"></i>&nbsp; Read Report</a>
+            <a href="/analytics" class="btn-secondary"><i class="fas fa-chart-bar"></i>&nbsp; View Dashboard</a>
+        </div>
+    </section>
+
+    <!-- OVERVIEW CARDS -->
+    <div class="report-overview fade-up">
+        <div class="overview-grid">
+            <div class="overview-card">
+                <div class="icon"><i class="fas fa-database"></i></div>
+                <h3>Dataset</h3>
+                <p>Telco Customer Churn</p>
+            </div>
+            <div class="overview-card">
+                <div class="icon"><i class="fas fa-users"></i></div>
+                <h3>7,043</h3>
+                <p>Total Records</p>
+            </div>
+            <div class="overview-card">
+                <div class="icon"><i class="fas fa-table-columns"></i></div>
+                <h3>21</h3>
+                <p>Features / Columns</p>
+            </div>
+            <div class="overview-card">
+                <div class="icon"><i class="fas fa-chart-pie"></i></div>
+                <h3>10</h3>
+                <p>Tableau Worksheets</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- REPORT SECTIONS -->
+    <div class="report-section" id="report">
+
+        <!-- 1. Total Customers -->
+        <div class="report-card fade-up">
+            <div class="report-card-header">
+                <div class="report-number">1</div>
+                <div class="report-card-header-text">
+                    <h2>Total Customers (KPI)</h2>
+                    <span class="tag">KPI Card</span>
+                </div>
+            </div>
+            <p>
+                This worksheet displays the <strong>total number of unique customers</strong> in the Telco dataset as a Key Performance Indicator. It provides an immediate overview of the dataset scope. The <code>customerID</code> field is placed on the Text shelf with a <strong>COUNTD (Count Distinct)</strong> aggregation to ensure each customer is counted only once.
+            </p>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <i class="fas fa-cog"></i>
+                    <span><strong>Field used:</strong> customerID → Text shelf</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-calculator"></i>
+                    <span><strong>Aggregation:</strong> COUNTD (Count Distinct)</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-chart-simple"></i>
+                    <span><strong>Chart type:</strong> Text / KPI card</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-bullseye"></i>
+                    <span><strong>Result:</strong> 7,043 total customers</span>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <i class="fas fa-lightbulb"></i>
+                <p><strong>Business Insight:</strong> The dataset contains 7,043 telecom customers. This number serves as the baseline for all percentage-based calculations and churn rate analysis across the entire dashboard.</p>
+            </div>
+        </div>
+
+        <!-- 2. Churn Rate -->
+        <div class="report-card fade-up">
+            <div class="report-card-header">
+                <div class="report-number">2</div>
+                <div class="report-card-header-text">
+                    <h2>Churn Rate (KPI)</h2>
+                    <span class="tag">Calculated Field</span>
+                </div>
+            </div>
+            <p>
+                This worksheet calculates and displays the <strong>overall churn rate</strong> as a percentage. A calculated field is created to divide the number of churned customers by the total customer count. The <code>Churn</code> field is filtered to "Yes" to isolate churned customers.
+            </p>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <i class="fas fa-code"></i>
+                    <span><strong>Formula:</strong> SUM(IF [Churn]='Yes' THEN 1 ELSE 0 END) / COUNT([customerID])</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-percentage"></i>
+                    <span><strong>Format:</strong> Displayed as Percentage</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-filter"></i>
+                    <span><strong>Filter:</strong> Churn = Yes</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-bullseye"></i>
+                    <span><strong>Result:</strong> ~26.5% churn rate</span>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <i class="fas fa-lightbulb"></i>
+                <p><strong>Business Insight:</strong> Approximately 1 in 4 customers has churned. A 26.5% churn rate is considered high in the telecom industry, indicating a significant retention problem that requires immediate attention and strategic intervention.</p>
+            </div>
+        </div>
+
+        <!-- 3. Churn by Gender -->
+        <div class="report-card fade-up">
+            <div class="report-card-header">
+                <div class="report-number">3</div>
+                <div class="report-card-header-text">
+                    <h2>Churn by Gender</h2>
+                    <span class="tag">Bar Chart</span>
+                </div>
+            </div>
+            <p>
+                This worksheet presents a <strong>grouped bar chart</strong> comparing churn across male and female customers. The <code>gender</code> field is placed on Columns, <code>COUNT(customerID)</code> on Rows, and <code>Churn</code> on the Color shelf to differentiate churned vs. non-churned customers visually.
+            </p>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <i class="fas fa-table-columns"></i>
+                    <span><strong>Columns:</strong> gender</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-table-rows"></i>
+                    <span><strong>Rows:</strong> COUNT(customerID)</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-palette"></i>
+                    <span><strong>Color:</strong> Churn (Red/Green)</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span><strong>Chart type:</strong> Grouped Bar Chart</span>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <i class="fas fa-lightbulb"></i>
+                <p><strong>Business Insight:</strong> Gender has minimal impact on churn behavior. Both male and female customers show nearly identical churn rates (~26-27%), suggesting that gender-based retention strategies would not be effective. The focus should shift to other factors.</p>
+            </div>
+        </div>
+
+        <!-- 4. Churn by Contract -->
+        <div class="report-card fade-up">
+            <div class="report-card-header">
+                <div class="report-number">4</div>
+                <div class="report-card-header-text">
+                    <h2>Churn by Contract Type</h2>
+                    <span class="tag">Bar Chart</span>
+                </div>
+            </div>
+            <p>
+                This worksheet analyzes how <strong>contract type influences churn</strong>. Customers are segmented into Month-to-Month, One-Year, and Two-Year contracts. The chart clearly shows that shorter commitments correlate with significantly higher churn rates.
+            </p>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <i class="fas fa-table-columns"></i>
+                    <span><strong>Columns:</strong> Contract</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-table-rows"></i>
+                    <span><strong>Rows:</strong> COUNT(customerID)</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-palette"></i>
+                    <span><strong>Color:</strong> Churn (Red/Green)</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span><strong>Chart type:</strong> Grouped Bar Chart</span>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <i class="fas fa-lightbulb"></i>
+                <p><strong>Business Insight:</strong> Month-to-month customers have the <strong>highest churn rate (~42%)</strong>, while two-year contract customers show only ~3% churn. This is the strongest predictor of churn. Offering incentives to convert month-to-month customers to annual contracts would significantly reduce churn.</p>
+            </div>
+        </div>
+
+        <!-- 5. Churn by Internet Service -->
+        <div class="report-card fade-up">
+            <div class="report-card-header">
+                <div class="report-number">5</div>
+                <div class="report-card-header-text">
+                    <h2>Churn by Internet Service</h2>
+                    <span class="tag">Bar Chart</span>
+                </div>
+            </div>
+            <p>
+                This worksheet compares churn rates across three internet service categories: <strong>Fiber Optic, DSL, and No Internet Service</strong>. The analysis reveals a surprising pattern — customers with faster, more expensive internet service churn at a higher rate.
+            </p>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <i class="fas fa-table-columns"></i>
+                    <span><strong>Columns:</strong> InternetService</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-table-rows"></i>
+                    <span><strong>Rows:</strong> COUNT(customerID)</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-palette"></i>
+                    <span><strong>Color:</strong> Churn (Red/Green)</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span><strong>Chart type:</strong> Grouped Bar Chart</span>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <i class="fas fa-lightbulb"></i>
+                <p><strong>Business Insight:</strong> Fiber optic users have the <strong>highest churn rate (~42%)</strong> compared to DSL (~19%) and no internet (~7%). This suggests dissatisfaction with service quality or pricing. Despite offering premium speed, fiber optic customers may feel the service doesn't justify the cost.</p>
+            </div>
+        </div>
+
+        <!-- 6. Churn by Payment Method -->
+        <div class="report-card fade-up">
+            <div class="report-card-header">
+                <div class="report-number">6</div>
+                <div class="report-card-header-text">
+                    <h2>Churn by Payment Method</h2>
+                    <span class="tag">Bar Chart</span>
+                </div>
+            </div>
+            <p>
+                This worksheet examines the relationship between <strong>payment method and churn</strong>. Four payment methods are compared: Electronic Check, Mailed Check, Bank Transfer (Automatic), and Credit Card (Automatic). The results reveal that manual payment methods correlate with higher churn.
+            </p>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <i class="fas fa-table-columns"></i>
+                    <span><strong>Columns:</strong> PaymentMethod</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-table-rows"></i>
+                    <span><strong>Rows:</strong> COUNT(customerID)</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-palette"></i>
+                    <span><strong>Color:</strong> Churn (Red/Green)</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span><strong>Chart type:</strong> Grouped Bar Chart</span>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <i class="fas fa-lightbulb"></i>
+                <p><strong>Business Insight:</strong> Electronic check users have the <strong>highest churn rate (~45%)</strong>, nearly double that of automatic payment users (~15-18%). Customers who set up automatic payments are more committed. Encouraging automatic payment enrollment could directly reduce churn.</p>
+            </div>
+        </div>
+
+        <!-- 7. Monthly Charges Distribution -->
+        <div class="report-card fade-up">
+            <div class="report-card-header">
+                <div class="report-number">7</div>
+                <div class="report-card-header-text">
+                    <h2>Monthly Charges Distribution</h2>
+                    <span class="tag">Histogram</span>
+                </div>
+            </div>
+            <p>
+                This worksheet creates a <strong>histogram</strong> to visualize the distribution of monthly charges across all customers. The <code>MonthlyCharges</code> field is dragged to create bins that group customers by their monthly spending levels.
+            </p>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <i class="fas fa-cog"></i>
+                    <span><strong>Field:</strong> MonthlyCharges (binned)</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-chart-area"></i>
+                    <span><strong>Chart type:</strong> Histogram</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span><strong>Range:</strong> $18 to $118 per month</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-bullseye"></i>
+                    <span><strong>Avg churned:</strong> ~$74/month</span>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <i class="fas fa-lightbulb"></i>
+                <p><strong>Business Insight:</strong> Churned customers tend to have <strong>higher monthly charges (avg ~$74)</strong> compared to retained customers (avg ~$61). Customers paying more may have higher expectations. Consider loyalty discounts or premium service guarantees for high-paying customers to reduce churn risk.</p>
+            </div>
+        </div>
+
+        <!-- 8. Tenure Distribution -->
+        <div class="report-card fade-up">
+            <div class="report-card-header">
+                <div class="report-number">8</div>
+                <div class="report-card-header-text">
+                    <h2>Tenure Distribution</h2>
+                    <span class="tag">Histogram</span>
+                </div>
+            </div>
+            <p>
+                This worksheet shows the <strong>distribution of customer tenure</strong> (how many months a customer has been with the company). The <code>tenure</code> field is binned to create a histogram that highlights the relationship between customer longevity and churn.
+            </p>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <i class="fas fa-cog"></i>
+                    <span><strong>Field:</strong> tenure (binned)</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-chart-area"></i>
+                    <span><strong>Chart type:</strong> Histogram</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-calendar"></i>
+                    <span><strong>Range:</strong> 1 to 72 months</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-bullseye"></i>
+                    <span><strong>Avg churned:</strong> ~18 months</span>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <i class="fas fa-lightbulb"></i>
+                <p><strong>Business Insight:</strong> Churned customers have a significantly <strong>shorter average tenure (~18 months)</strong> vs. retained customers (~38 months). Most churn happens in the <strong>first 12 months</strong>. Implementing a strong onboarding program and early engagement strategy within the first year is critical.</p>
+            </div>
+        </div>
+
+        <!-- 9. Churn by Senior Citizen -->
+        <div class="report-card fade-up">
+            <div class="report-card-header">
+                <div class="report-number">9</div>
+                <div class="report-card-header-text">
+                    <h2>Churn by Senior Citizen</h2>
+                    <span class="tag">Bar Chart</span>
+                </div>
+            </div>
+            <p>
+                This worksheet analyzes churn based on <strong>senior citizen status</strong>. The <code>SeniorCitizen</code> field (0 = Non-Senior, 1 = Senior) is placed on Columns with <code>COUNT(customerID)</code> on Rows and <code>Churn</code> on Color to compare both groups.
+            </p>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <i class="fas fa-table-columns"></i>
+                    <span><strong>Columns:</strong> SeniorCitizen (0/1)</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-table-rows"></i>
+                    <span><strong>Rows:</strong> COUNT(customerID)</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-palette"></i>
+                    <span><strong>Color:</strong> Churn (Red/Green)</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span><strong>Chart type:</strong> Grouped Bar Chart</span>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <i class="fas fa-lightbulb"></i>
+                <p><strong>Business Insight:</strong> Senior citizens have a <strong>higher churn rate (~41%)</strong> compared to non-seniors (~24%). Although seniors represent only ~16% of the dataset, their disproportionately high churn suggests they may need tailored support, simplified plans, or dedicated customer service.</p>
+            </div>
+        </div>
+
+        <!-- 10. Churn by Dependents -->
+        <div class="report-card fade-up">
+            <div class="report-card-header">
+                <div class="report-number">10</div>
+                <div class="report-card-header-text">
+                    <h2>Churn by Dependents</h2>
+                    <span class="tag">Bar Chart</span>
+                </div>
+            </div>
+            <p>
+                This worksheet examines whether having <strong>dependents (children/family members)</strong> affects a customer's likelihood to churn. The <code>Dependents</code> field (Yes/No) is placed on Columns with churn-colored bars showing the retention pattern.
+            </p>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <i class="fas fa-table-columns"></i>
+                    <span><strong>Columns:</strong> Dependents</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-table-rows"></i>
+                    <span><strong>Rows:</strong> COUNT(customerID)</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-palette"></i>
+                    <span><strong>Color:</strong> Churn (Red/Green)</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span><strong>Chart type:</strong> Grouped Bar Chart</span>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <i class="fas fa-lightbulb"></i>
+                <p><strong>Business Insight:</strong> Customers <strong>without dependents churn more (~31%)</strong> than those with dependents (~15%). Family plans create a stronger sense of commitment and switching cost. Promoting family bundles and multi-user discounts could significantly improve retention rates.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CONCLUSION -->
+    <div class="conclusion-section fade-up">
+        <div class="conclusion-card">
+            <h2><i class="fas fa-clipboard-check"></i> Key Findings & Conclusion</h2>
+            <p>
+                Based on the analysis of 7,043 telecom customers across 10 Tableau worksheets,
+                the following actionable findings have been identified to reduce customer churn:
+            </p>
+
+            <ul class="findings-list">
+                <li>
+                    <span class="num">1</span>
+                    <span>The overall <strong>churn rate is ~26.5%</strong>, meaning roughly 1 in 4 customers leaves the service — a critical business concern.</span>
+                </li>
+                <li>
+                    <span class="num">2</span>
+                    <span><strong>Gender has no significant impact</strong> on churn. Both male and female customers churn at nearly identical rates.</span>
+                </li>
+                <li>
+                    <span class="num">3</span>
+                    <span><strong>Month-to-month contracts</strong> are the strongest churn predictor with ~42% churn rate vs. ~3% for two-year contracts.</span>
+                </li>
+                <li>
+                    <span class="num">4</span>
+                    <span><strong>Fiber optic customers</strong> churn the most (~42%), possibly due to service quality dissatisfaction or pricing concerns.</span>
+                </li>
+                <li>
+                    <span class="num">5</span>
+                    <span><strong>Electronic check</strong> payment users churn at ~45%, nearly double the rate of automatic payment users.</span>
+                </li>
+                <li>
+                    <span class="num">6</span>
+                    <span>Churned customers have <strong>higher monthly charges (avg $74)</strong> and <strong>shorter tenure (avg 18 months)</strong>.</span>
+                </li>
+                <li>
+                    <span class="num">7</span>
+                    <span><strong>Senior citizens</strong> are ~1.7x more likely to churn than non-senior customers.</span>
+                </li>
+                <li>
+                    <span class="num">8</span>
+                    <span>Customers <strong>without dependents</strong> churn at roughly double the rate of those with family members on the plan.</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SOCIAL -->
+    <section class="social-section fade-up">
+        <h2>Connect With Us</h2>
+        <p>Follow ChurnGuard on social media for analytics tips and business insights.</p>
+        <div class="social-icons">
+            <a href="#" class="social-icon github" title="GitHub"><i class="fab fa-github"></i></a>
+            <a href="#" class="social-icon linkedin" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" class="social-icon twitter" title="Twitter"><i class="fab fa-x-twitter"></i></a>
+            <a href="#" class="social-icon instagram" title="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-icon youtube" title="YouTube"><i class="fab fa-youtube"></i></a>
+            <a href="#" class="social-icon tableau" title="Tableau Public"><i class="fas fa-chart-bar"></i></a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        &copy; 2026 ChurnGuard. Project report powered by <a href="#">Tableau</a> & <a href="#">Flask</a>.
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script>
+        // Navbar scroll
+        window.addEventListener('scroll', () => {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        // Scroll reveal
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+
+        document.querySelectorAll('.fade-up, .fade-left, .fade-right').forEach(el => observer.observe(el));
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    </script>
+
+</body>
+
+</html>

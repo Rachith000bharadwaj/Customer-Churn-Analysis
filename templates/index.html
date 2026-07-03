@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChurnGuard | Smart Customer Churn Analysis Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #060a14;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        /* ===== ANIMATED BACKGROUND PARTICLES ===== */
+        .bg-particles {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px; height: 3px;
+            background: rgba(0, 198, 255, 0.4);
+            border-radius: 50%;
+            animation: particleFloat linear infinite;
+        }
+
+        .particle:nth-child(1) { left: 10%; animation-duration: 15s; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 20%; animation-duration: 20s; animation-delay: 2s; width: 2px; height: 2px; }
+        .particle:nth-child(3) { left: 35%; animation-duration: 18s; animation-delay: 4s; }
+        .particle:nth-child(4) { left: 50%; animation-duration: 22s; animation-delay: 1s; width: 4px; height: 4px; }
+        .particle:nth-child(5) { left: 65%; animation-duration: 16s; animation-delay: 3s; }
+        .particle:nth-child(6) { left: 75%; animation-duration: 25s; animation-delay: 5s; width: 2px; height: 2px; }
+        .particle:nth-child(7) { left: 85%; animation-duration: 19s; animation-delay: 0s; }
+        .particle:nth-child(8) { left: 92%; animation-duration: 21s; animation-delay: 6s; width: 4px; height: 4px; }
+        .particle:nth-child(9) { left: 45%; animation-duration: 17s; animation-delay: 2s; }
+        .particle:nth-child(10) { left: 5%; animation-duration: 23s; animation-delay: 4s; width: 2px; height: 2px; }
+
+        @keyframes particleFloat {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) scale(1); opacity: 0; }
+        }
+
+        /* ===== SCROLL ANIMATIONS ===== */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fade-left {
+            opacity: 0;
+            transform: translateX(-60px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-left.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .fade-right {
+            opacity: 0;
+            transform: translateX(60px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-right.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .scale-in {
+            opacity: 0;
+            transform: scale(0.85);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .scale-in.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* ===== NAVBAR ===== */
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            z-index: 1000;
+            padding: 16px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(6, 10, 20, 0.8);
+            backdrop-filter: blur(25px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+
+        nav.scrolled {
+            padding: 12px 60px;
+            background: rgba(6, 10, 20, 0.95);
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px; height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 900;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 114, 255, 0.4);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #8a8a9a;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -6px; left: 0;
+            width: 0; height: 2px;
+            background: linear-gradient(90deg, #0072ff, #00c6ff);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #fff;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 140px 80px 80px;
+            position: relative;
+            gap: 60px;
+        }
+
+        .hero-glow-1 {
+            position: absolute;
+            top: -100px; left: -100px;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(0, 114, 255, 0.12), transparent 70%);
+            animation: glow1 10s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .hero-glow-2 {
+            position: absolute;
+            bottom: -100px; right: -100px;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(0, 198, 255, 0.08), transparent 70%);
+            animation: glow2 12s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes glow1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(60px, 40px) scale(1.1); }
+        }
+
+        @keyframes glow2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-40px, -60px) scale(1.15); }
+        }
+
+        .hero-text {
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            background: rgba(0, 114, 255, 0.1);
+            border: 1px solid rgba(0, 114, 255, 0.2);
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #00c6ff;
+            margin-bottom: 25px;
+            animation: badgePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0, 114, 255, 0.2); }
+            50% { box-shadow: 0 0 0 10px rgba(0, 114, 255, 0); }
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 900;
+            line-height: 1.12;
+            margin-bottom: 22px;
+        }
+
+        .hero h1 .highlight {
+            background: linear-gradient(135deg, #00c6ff, #0072ff, #00c6ff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 4s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: #7a7a8a;
+            max-width: 550px;
+            line-height: 1.75;
+            margin-bottom: 38px;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 16px;
+        }
+
+        .btn-primary {
+            padding: 15px 36px;
+            font-size: 15px;
+            font-weight: 700;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
+            color: #fff;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.4s;
+            box-shadow: 0 6px 25px rgba(0, 114, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary:hover::before { left: 100%; }
+
+        .btn-primary:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 40px rgba(0, 114, 255, 0.5);
+        }
+
+        .btn-secondary {
+            padding: 15px 36px;
+            font-size: 15px;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            color: #b0b0c0;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 198, 255, 0.3);
+            color: #fff;
+            transform: translateY(-3px);
+        }
+
+        /* ===== HERO IMAGE ===== */
+        .hero-image {
+            flex: 1;
+            position: relative;
+            z-index: 1;
+            perspective: 1000px;
+        }
+
+        .hero-image img {
+            width: 100%;
+            max-width: 550px;
+            border-radius: 24px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 114, 255, 0.1);
+            animation: heroFloat 6s ease-in-out infinite;
+            transform: rotateY(-8deg) rotateX(4deg);
+            transition: transform 0.5s;
+        }
+
+        .hero-image img:hover {
+            transform: rotateY(0deg) rotateX(0deg) scale(1.03);
+        }
+
+        @keyframes heroFloat {
+            0%, 100% { transform: rotateY(-8deg) rotateX(4deg) translateY(0); }
+            50% { transform: rotateY(-8deg) rotateX(4deg) translateY(-15px); }
+        }
+
+        .hero-image::after {
+            content: '';
+            position: absolute;
+            bottom: -20px; left: 10%;
+            width: 80%; height: 50px;
+            background: radial-gradient(ellipse, rgba(0, 114, 255, 0.2), transparent);
+            filter: blur(15px);
+            animation: heroFloat 6s ease-in-out infinite;
+        }
+
+        /* ===== STATS BAR ===== */
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 60px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 25px 30px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 18px;
+            min-width: 160px;
+            transition: all 0.4s;
+            cursor: default;
+        }
+
+        .stat-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(0, 114, 255, 0.2);
+        }
+
+        .stat-item h3 {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-item p {
+            font-size: 12px;
+            color: #5a5a6a;
+            margin-top: 6px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        /* ===== SECTIONS ===== */
+        .section { padding: 100px 60px; position: relative; z-index: 1; }
+
+        .section-title {
+            text-align: center;
+            font-size: 40px;
+            font-weight: 900;
+            margin-bottom: 14px;
+            color: #fff;
+        }
+
+        .section-sub {
+            text-align: center;
+            font-size: 17px;
+            color: #6a6a7a;
+            max-width: 650px;
+            margin: 0 auto 60px;
+            line-height: 1.75;
+        }
+
+        /* ===== 3D FEATURES GRID ===== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
+            max-width: 1200px;
+            margin: 0 auto;
+            perspective: 1200px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 22px;
+            padding: 40px 30px;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            cursor: default;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #0072ff, #00c6ff);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(0, 114, 255, 0.08), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s;
+            pointer-events: none;
+        }
+
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(0, 114, 255, 0.25);
+            transform: translateY(-12px) rotateX(4deg) scale(1.02);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35), 0 0 30px rgba(0, 114, 255, 0.08);
+        }
+
+        .feature-card:hover::before { opacity: 1; }
+        .feature-card:hover::after { opacity: 1; }
+
+        .feature-icon {
+            width: 58px; height: 58px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(0, 114, 255, 0.18), rgba(0, 198, 255, 0.08));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 22px;
+            font-size: 24px;
+            color: #00c6ff;
+            transition: all 0.4s;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.15) rotate(-5deg);
+            box-shadow: 0 8px 25px rgba(0, 114, 255, 0.25);
+        }
+
+        .feature-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+
+        .feature-card p {
+            font-size: 15px;
+            color: #6a6a7a;
+            line-height: 1.7;
+        }
+
+        /* ===== IMAGE SHOWCASE ===== */
+        .showcase {
+            display: flex;
+            align-items: center;
+            gap: 70px;
+            max-width: 1200px;
+            margin: 0 auto;
+            perspective: 1000px;
+        }
+
+        .showcase-image {
+            flex: 1;
+            position: relative;
+        }
+
+        .showcase-image img {
+            width: 100%;
+            border-radius: 22px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 114, 255, 0.08);
+            transition: all 0.5s;
+            transform: rotateY(6deg);
+        }
+
+        .showcase-image img:hover {
+            transform: rotateY(0deg) scale(1.03);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), 0 0 50px rgba(0, 114, 255, 0.12);
+        }
+
+        .showcase-image::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(0, 114, 255, 0.3), transparent, rgba(0, 198, 255, 0.2));
+            z-index: -1;
+            animation: borderGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .showcase-text {
+            flex: 1;
+        }
+
+        .showcase-text h2 {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 18px;
+            color: #fff;
+        }
+
+        .showcase-text p {
+            font-size: 16px;
+            color: #7a7a8a;
+            line-height: 1.75;
+            margin-bottom: 12px;
+        }
+
+        .showcase-text ul {
+            list-style: none;
+            margin-top: 22px;
+        }
+
+        .showcase-text ul li {
+            font-size: 15px;
+            color: #8a8a9a;
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all 0.3s;
+        }
+
+        .showcase-text ul li:hover {
+            color: #fff;
+            transform: translateX(8px);
+        }
+
+        .showcase-text ul li i {
+            color: #00c6ff;
+            font-size: 15px;
+        }
+
+        /* ===== BUSINESS STATS ===== */
+        .business-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 28px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .bstat-card {
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 38px 25px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bstat-card::before {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #0072ff, #00c6ff);
+            transform: scaleX(0);
+            transition: transform 0.4s;
+        }
+
+        .bstat-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-10px) scale(1.04);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .bstat-card:hover::before { transform: scaleX(1); }
+
+        .bstat-card h3 {
+            font-size: 38px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .bstat-card p {
+            font-size: 14px;
+            color: #5a5a6a;
+            font-weight: 600;
+        }
+
+        /* ===== SOCIAL BAR ===== */
+        .social-section {
+            text-align: center;
+            padding: 80px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .social-section h2 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+
+        .social-section p {
+            font-size: 16px;
+            color: #6a6a7a;
+            margin-bottom: 35px;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 22px;
+        }
+
+        .social-icon {
+            width: 58px; height: 58px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #8a8a9a;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .social-icon:hover {
+            transform: translateY(-8px) scale(1.1);
+            color: #fff;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .social-icon.github:hover { background: #333; border-color: #555; }
+        .social-icon.linkedin:hover { background: #0077b5; border-color: #0088cc; }
+        .social-icon.twitter:hover { background: #1da1f2; border-color: #33b5ff; }
+        .social-icon.instagram:hover { background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); border-color: #e1306c; }
+        .social-icon.youtube:hover { background: #ff0000; border-color: #ff3333; }
+        .social-icon.tableau:hover { background: #e97627; border-color: #f0883a; }
+
+        /* ===== CTA ===== */
+        .cta-section {
+            text-align: center;
+            padding: 100px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(0, 114, 255, 0.08), transparent 70%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .cta-section h2 {
+            font-size: 40px;
+            font-weight: 900;
+            margin-bottom: 18px;
+            color: #fff;
+        }
+
+        .cta-section p {
+            font-size: 17px;
+            color: #6a6a7a;
+            max-width: 600px;
+            margin: 0 auto 38px;
+            line-height: 1.75;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 14px;
+            color: #3a3a4a;
+            position: relative;
+            z-index: 1;
+        }
+
+        footer a {
+            color: #00c6ff;
+            text-decoration: none;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .hero { flex-direction: column; padding: 140px 40px 60px; text-align: center; }
+            .hero-text { align-items: center; display: flex; flex-direction: column; }
+            .hero p { max-width: 100%; }
+            .hero-image img { max-width: 400px; }
+            .showcase { flex-direction: column; }
+        }
+
+        @media (max-width: 768px) {
+            nav { padding: 14px 22px; }
+            .nav-links { gap: 18px; }
+            .hero h1 { font-size: 34px; }
+            .hero-btns { flex-direction: column; align-items: center; }
+            .stats-bar { flex-wrap: wrap; gap: 15px; }
+            .stat-item { min-width: 130px; }
+            .features-grid { grid-template-columns: 1fr; }
+            .business-stats { grid-template-columns: repeat(2, 1fr); }
+            .section { padding: 60px 22px; }
+            .showcase-image img { transform: rotateY(0); }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ANIMATED PARTICLES -->
+    <div class="bg-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav id="navbar">
+        <a href="/" class="logo">
+            <div class="logo-icon">C</div>
+            ChurnGuard
+        </a>
+        <ul class="nav-links">
+            <li><a href="#home" class="active">Home</a></li>
+            <li><a href="/features">Features</a></li>
+            <li><a href="/insights">Insights</a></li>
+            <li><a href="/growth">Growth</a></li>
+            <li><a href="/analytics">Analytics</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero" id="home">
+        <div class="hero-glow-1"></div>
+        <div class="hero-glow-2"></div>
+
+        <div class="hero-text">
+            <div class="hero-badge">
+                <i class="fas fa-shield-halved"></i>
+                Customer Retention Intelligence
+            </div>
+            <h1>Predict & Prevent<br><span class="highlight">Customer Churn</span></h1>
+            <p>
+                ChurnGuard helps your business analyze customer behavior, identify churn risks,
+                monitor retention patterns, and convert raw telecom data into powerful business
+                decisions using an interactive Tableau-driven analytics dashboard.
+            </p>
+            <div class="hero-btns">
+                <a href="/analytics" class="btn-primary"><i class="fas fa-chart-line"></i>&nbsp; View Analytics</a>
+                <a href="#features" class="btn-secondary">Explore Features</a>
+            </div>
+        </div>
+
+        <div class="hero-image">
+            <img src="/static/images/hero_dashboard.png" alt="ChurnGuard Dashboard Preview">
+        </div>
+    </section>
+
+    <!-- STATS BAR -->
+    <div class="stats-bar fade-up">
+        <div class="stat-item">
+            <h3>7,043</h3>
+            <p>Customers Analyzed</p>
+        </div>
+        <div class="stat-item">
+            <h3>26.5%</h3>
+            <p>Churn Rate</p>
+        </div>
+        <div class="stat-item">
+            <h3>11</h3>
+            <p>Dashboard Charts</p>
+        </div>
+        <div class="stat-item">
+            <h3>+18</h3>
+            <p>Features Tracked</p>
+        </div>
+    </div>
+
+    <!-- FEATURES -->
+    <section class="section" id="features">
+        <h2 class="section-title fade-up">Powerful Churn Intelligence</h2>
+        <p class="section-sub fade-up">
+            ChurnGuard is built with interactive analytics, modern UI, responsive layout,
+            and data-focused business sections for your customer retention strategy.
+        </p>
+
+        <div class="features-grid">
+            <div class="feature-card fade-up">
+                <div class="feature-icon"><i class="fas fa-chart-pie"></i></div>
+                <h3>Churn Analytics</h3>
+                <p>Track churn rate, customer segments, contract types, and retention KPIs from one interactive dashboard.</p>
+            </div>
+            <div class="feature-card fade-up" style="transition-delay: 0.1s">
+                <div class="feature-icon"><i class="fas fa-users"></i></div>
+                <h3>Customer Segmentation</h3>
+                <p>Analyze churn patterns by gender, senior citizen status, dependents, and partner information.</p>
+            </div>
+            <div class="feature-card fade-up" style="transition-delay: 0.2s">
+                <div class="feature-icon"><i class="fas fa-lightbulb"></i></div>
+                <h3>Retention Insights</h3>
+                <p>Understand what drives churn, identify at-risk customers, and take better retention decisions faster.</p>
+            </div>
+            <div class="feature-card fade-up" style="transition-delay: 0.1s">
+                <div class="feature-icon"><i class="fas fa-file-contract"></i></div>
+                <h3>Contract Analysis</h3>
+                <p>Compare month-to-month, one-year, and two-year contracts to understand churn behavior patterns.</p>
+            </div>
+            <div class="feature-card fade-up" style="transition-delay: 0.2s">
+                <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
+                <h3>Responsive Interface</h3>
+                <p>Works smoothly on desktop, laptop, tablet, and mobile screens with a polished dark premium theme.</p>
+            </div>
+            <div class="feature-card fade-up" style="transition-delay: 0.3s">
+                <div class="feature-icon"><i class="fas fa-plug"></i></div>
+                <h3>Tableau Integration</h3>
+                <p>Embedded Tableau dashboard connected directly to your Flask application for live interactive analytics.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- BUSINESS STATS -->
+    <section class="section" id="insights">
+        <div class="business-stats fade-up">
+            <div class="bstat-card">
+                <h3>7K+</h3>
+                <p>Customers Tracked</p>
+            </div>
+            <div class="bstat-card">
+                <h3>73.5%</h3>
+                <p>Retention Rate</p>
+            </div>
+            <div class="bstat-card">
+                <h3>$64</h3>
+                <p>Avg Monthly Charge</p>
+            </div>
+            <div class="bstat-card">
+                <h3>32mo</h3>
+                <p>Avg Tenure</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SHOWCASE SECTION -->
+    <section class="section" id="growth">
+        <div class="showcase">
+            <div class="showcase-image fade-left">
+                <img src="/static/images/retention_concept.png" alt="Customer Retention Intelligence">
+            </div>
+            <div class="showcase-text fade-right">
+                <h2>Built for Smart Retention Teams</h2>
+                <p>
+                    ChurnGuard gives your team a premium interface to monitor customer activity,
+                    analyze churn patterns, and move toward data-driven retention strategies.
+                </p>
+                <ul>
+                    <li><i class="fas fa-check-circle"></i> Clean navigation for Home, Features, Insights, Growth & Analytics</li>
+                    <li><i class="fas fa-check-circle"></i> Dark 3D animated design with glassmorphism cards</li>
+                    <li><i class="fas fa-check-circle"></i> Analytics button linked directly to Flask route: /analytics</li>
+                    <li><i class="fas fa-check-circle"></i> Responsive layout suitable for real business dashboard projects</li>
+                    <li><i class="fas fa-check-circle"></i> Tableau Public integration with interactive filters</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- SHOWCASE 2 -->
+    <section class="section">
+        <div class="showcase" style="flex-direction: row-reverse;">
+            <div class="showcase-image fade-right">
+                <img src="/static/images/analytics_illustration.png" alt="Analytics Intelligence" style="transform: rotateY(-6deg);">
+            </div>
+            <div class="showcase-text fade-left">
+                <h2>Business Intelligence View</h2>
+                <p>
+                    Use ChurnGuard to convert customer records into actionable insights, retention reports,
+                    and smart strategies that reduce churn and improve customer lifetime value.
+                </p>
+                <ul>
+                    <li><i class="fas fa-check-circle"></i> Churn by contract type, payment method & internet service</li>
+                    <li><i class="fas fa-check-circle"></i> Monthly charges & tenure distribution analysis</li>
+                    <li><i class="fas fa-check-circle"></i> Senior citizen & demographics breakdown</li>
+                    <li><i class="fas fa-check-circle"></i> Real-time interactive Tableau filters</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- SOCIAL SECTION -->
+    <section class="social-section fade-up">
+        <h2>Connect With Us</h2>
+        <p>Follow ChurnGuard on social media for updates, analytics tips, and business insights.</p>
+        <div class="social-icons">
+            <a href="#" class="social-icon github" title="GitHub"><i class="fab fa-github"></i></a>
+            <a href="#" class="social-icon linkedin" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" class="social-icon twitter" title="Twitter"><i class="fab fa-x-twitter"></i></a>
+            <a href="#" class="social-icon instagram" title="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-icon youtube" title="YouTube"><i class="fab fa-youtube"></i></a>
+            <a href="#" class="social-icon tableau" title="Tableau Public"><i class="fas fa-chart-bar"></i></a>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section fade-up">
+        <h2>Ready to Analyze Customer Churn?</h2>
+        <p>
+            Open the analytics section and start tracking churn patterns, customer segments,
+            contract behaviors, and revenue impact across your telecom business.
+        </p>
+        <a href="/analytics" class="btn-primary"><i class="fas fa-arrow-right"></i>&nbsp; Go to Analytics</a>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        &copy; 2026 ChurnGuard. Designed for smart customer churn analytics. | 
+        Powered by <a href="#">Tableau</a> & <a href="#">Flask</a>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            nav.classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        // Scroll reveal animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+        document.querySelectorAll('.fade-up, .fade-left, .fade-right, .scale-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // 3D tilt effect on feature cards
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                card.style.setProperty('--x', x + '%');
+                card.style.setProperty('--y', y + '%');
+            });
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Counter animation for stats
+        function animateCounter(el, target, suffix = '') {
+            const isFloat = target % 1 !== 0;
+            const duration = 2000;
+            const start = performance.now();
+
+            function update(now) {
+                const progress = Math.min((now - start) / duration, 1);
+                const ease = 1 - Math.pow(1 - progress, 3);
+                const current = target * ease;
+                el.textContent = isFloat ? current.toFixed(1) + suffix : Math.floor(current).toLocaleString() + suffix;
+                if (progress < 1) requestAnimationFrame(update);
+            }
+
+            requestAnimationFrame(update);
+        }
+
+        const statObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.dataset.animated) {
+                    entry.target.dataset.animated = 'true';
+                    const h3 = entry.target.querySelector('h3');
+                    const text = h3.textContent.trim();
+
+                    if (text === '7,043') animateCounter(h3, 7043);
+                    else if (text === '26.5%') animateCounter(h3, 26.5, '%');
+                    else if (text === '11') animateCounter(h3, 11);
+                    else if (text === '+18') { animateCounter(h3, 18, ''); h3.textContent = '+' + h3.textContent; }
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.stat-item').forEach(el => statObserver.observe(el));
+    </script>
+
+</body>
+
+</html>
